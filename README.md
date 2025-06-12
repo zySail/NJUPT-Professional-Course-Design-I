@@ -24,6 +24,8 @@
 
 upload.py：上传数据
 
+authorization.py：生成安全全鉴代码
+
 get.py：通过API获取数据代码
 
 upload_and_get.py：定时上传并获取数据代码
