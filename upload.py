@@ -52,10 +52,10 @@ client.loop_start()
 
 while True:
     payload = {
-        "temp": round(random.uniform(0, 5), 2),
-        "light": random.randint(0, 5),
-        "pm25": round(random.uniform(0, 5), 2),
-        "co2": round(random.uniform(0, 5), 2)
+        "temp": round(random.uniform(-20, 60), 2),
+        "light": random.randint(0, 1000),
+        "pm25": round(random.uniform(0, 500), 2),
+        "co2": round(random.uniform(350, 5000), 2)
     }
     onenet_data = {
         "id": "123",  # 可改为动态值，例如 str(int(time.time()))
