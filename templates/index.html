@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>实时传感器数据</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    h1 { color: #333; }
+    .sensor { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h1>实时传感器数据</h1>
+  <div id="data"></div>
+
+  <script>
+    async function fetchData() {
+      const res = await fetch("/api/data");
+      const data = await res.json();
+      const container = document.getElementById("data");
+      if (data.error) {
+        container.innerHTML = `<p>错误：${data.error}</p>`;
+      } else {
+        container.innerHTML = "";
+        data.forEach(item => {
+          const el = document.createElement("div");
+          el.className = "sensor";
+          el.textContent = `${item.name}（${item.identifier}）: ${item.value}`;
+          container.appendChild(el);
+        });
+      }
+    }
+
+    fetchData();
+    setInterval(fetchData, 5000);  // 每5秒刷新一次
+  </script>
+</body>
+</html>
