@@ -1,67 +1,55 @@
-import base64
-import hmac
-import time
+from flask import Flask, jsonify
+import base64, hmac, time
 from urllib.parse import quote
 import requests
+from flask_cors import CORS
 
+app = Flask(__name__)
+CORS(app)
+@app.route('/')
+def index():
+    return 'Flask 后端正在运行中 ✅'
 
-# 生成 Token 函数
 def fix_base64_padding(s):
     return s + '=' * (-len(s) % 4)
-
 
 def token(user_id, access_key):
     version = '2022-05-01'
     res = f'userid/{user_id}'
     et = str(int(time.time()) + 3600)
     method = 'sha1'
-
     key = base64.b64decode(fix_base64_padding(access_key))
     org = f'{et}\n{method}\n{res}\n{version}'
     sign_b = hmac.new(key=key, msg=org.encode(), digestmod=method)
     sign = base64.b64encode(sign_b.digest()).decode()
     sign = quote(sign, safe='')
     res = quote(res, safe='')
-
     return f'version={version}&res={res}&et={et}&method={method}&sign={sign}'
 
-
-# 获取并处理数据函数
+@app.route('/api/device-data')
 def get_device_data():
-    # 基本信息
     user_id = '452794'
     access_key = 'qfkNg6nPlQSS58K7XzjPvZVKt4HKofWqhkfnACZEesv9D8C4NigcTkjTMiJmUOqq'
     api_url = 'http://iot-api.heclouds.com/thingmodel/query-device-property?product_id=QnTH9lJULe&device_name=d1'
-
-    # 构建 Header
     auth_token = token(user_id, access_key)
-    headers = {
-        'Authorization': auth_token
-    }
-
-    # 发送请求
+    headers = { 'Authorization': auth_token }
     response = requests.get(api_url, headers=headers)
-
     if response.status_code != 200:
-        print(f'请求失败，状态码：{response.status_code}')
-        return
-
+        return jsonify({'code': -1, 'msg': f'HTTP error {response.status_code}'}), 500
     data = response.json()
-
     if data['code'] != 0:
-        print(f"API 错误：{data['msg']}")
-        return
-
-    device_data = data['data']  # 实际数据是直接在 data 字段中
-
-    # 提取 identifier 和 value
-    print("传感器数据：")
-    for item in device_data:
-        identifier = item['identifier']
-        value = item['value']
-        name = item.get('name', identifier)
-        print(f"{name}（{identifier}）: {value}")
-
+        return jsonify({'code': -1, 'msg': data['msg']}), 500
+    return jsonify({
+        'code': 0,
+        'data': [
+            {
+                'identifier': item['identifier'],
+                'name': item.get('name', item['identifier']),
+                'value': item['value']
+            }
+            for item in data['data']
+        ]
+    })
 
 if __name__ == '__main__':
-    get_device_data()
+    app.run(host='0.0.0.0', port=5000)
