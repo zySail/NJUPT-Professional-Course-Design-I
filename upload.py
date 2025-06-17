@@ -43,7 +43,7 @@ def on_connect(client, userdata, flags, rc):
     else:
         print(f"连接失败，返回码 {rc}")
 
-client = mqtt.Client(client_id=device_name)
+client = mqtt.Client(client_id=device_name) #创建MQTT客户端
 client.username_pw_set(username=product_id, password=password)
 client.on_connect = on_connect
 

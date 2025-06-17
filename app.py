@@ -32,7 +32,7 @@ def get_data():
         response = requests.get(api_url, headers=headers)
         data = response.json()
         if data['code'] == 0:
-            return jsonify(data['data'])  # 返回 data 列表
+            return jsonify(data['data'])  # 返回application/json格式的data列表提供给前端
         else:
             return jsonify({"error": data['msg']})
     except Exception as e:

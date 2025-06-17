@@ -15,6 +15,7 @@
   <div id="data"></div>
   <div id="alerts"></div>
 
+  <!-- 报警阈值设置 -->
   <script>
     const THRESHOLDS = {
       temp: 40,
@@ -24,6 +25,7 @@
     };
 
     async function fetchData() {
+      <!-- 获取数据 -->
       const res = await fetch("/api/data");
       const data = await res.json();
       const container = document.getElementById("data");
@@ -36,12 +38,13 @@
         container.innerHTML = "";
         alerts.innerHTML = "";
 
+        <!-- 遍历每个数据并显示 -->
         data.forEach(item => {
           const el = document.createElement("div");
           el.className = "sensor";
           el.textContent = `${item.name}（${item.identifier}）: ${item.value}`;
           container.appendChild(el);
-
+          <!-- 检查每个数据是否超出阈值 -->
           if (THRESHOLDS[item.identifier] !== undefined && item.value > THRESHOLDS[item.identifier]) {
             const alert = document.createElement("div");
             alert.className = "alert";
