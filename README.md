@@ -22,10 +22,8 @@
 
 
 
-upload.py：上传数据
+upload.py：模拟上传数据
 
-authorization.py：生成安全全鉴代码
+app.py：通过API获取数据
 
-get.py：通过API获取数据代码
-
-upload_and_get.py：定时上传并获取数据代码
+iot-project：前端代码，显示数据并报警
